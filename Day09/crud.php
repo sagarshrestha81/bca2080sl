@@ -3,7 +3,7 @@ require_once 'connect.php';
 $table = "students";
 
 
-  if(isset($_POST['submit'])){
+  if(isset($_POST['create'])){
       $name = $_POST['name'];
       $email = $_POST['email'];
       $password = $_POST['password'];
@@ -31,6 +31,49 @@ $table = "students";
       }
       
   }
+  if(isset($_POST['update'])){
+      $name = $_POST['name'];
+      $email = $_POST['email'];
+      $password = $_POST['password'];
+      $phone = $_POST['phone'];      
+      if($name && $email && $phone){
+        $enc=  password_hash($password,PASSWORD_DEFAULT);
+        $id= $_GET['edit'];
+        if($password){
+            $passSql = ", student_password = '$enc' ";
+        } else {
+            $passSql = "";
+        }
+
+        $updateSql= "UPDATE $table SET 
+        student_name = '$name',
+        student_email = '$email',
+        $passSql,
+        student_phone = $phone
+        WHERE student_id = $id";
+
+        if($conn->query($updateSql)){
+            echo "Data has been Updated";
+        } else {
+            echo "Something went wrong: " . $conn->error;
+        }
+
+      }
+      
+  }
+
+  if(isset($_GET['edit'])){
+    $id = $_GET['edit'];
+    echo "Edit ID: " . $id;
+    $editSql = "SELECT * FROM $table WHERE student_id = $id";
+    $result = $conn->query($editSql);
+    if($result->num_rows > 0){
+        $row = $result->fetch_assoc();
+        print_r($row);
+    } else {
+        echo "No record found for editing.";
+    }
+  }
 
 ?>
 
@@ -53,22 +96,22 @@ $table = "students";
                 <form method="POST" action="">
                     <div class="mb-3">
                         <label for="exampleInputName1" class="form-label">Name</label>
-                        <input type="text" name="name" class="form-control" id="exampleInputName1" aria-describedby="nameHelp">
+                        <input type="text" name="name" value="<?php echo $row['student_name'] ?? ''; ?>" class="form-control" id="exampleInputName1" aria-describedby="nameHelp">
                     </div>
                     <div class="mb-3">
                         <label for="exampleInputEmail1" class="form-label">Email address</label>
-                        <input type="email" name="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+                        <input type="email" name="email" value="<?php echo $row['student_email'] ?? '' ; ?>" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
                     </div>
                     <div class="mb-3">
                         <label for="exampleInputPassword1" class="form-label">Password</label>
-                        <input type="password" name="password" class="form-control" id="exampleInputPassword1">
+                        <input type="text" name="password" value="" class="form-control" id="exampleInputPassword1">
                     </div>
                     <div class="mb-3">
                         <label for="exampleInputPhone1" class="form-label">Phone</label>
-                        <input type="number" name="phone" class="form-control" id="exampleInputPhone1">
+                        <input type="number" name="phone" value="<?php echo $row['student_phone'] ?? ''; ?>" class="form-control" id="exampleInputPhone1">
                     </div>
 
-                    <button type="submit" name="submit" class="btn btn-primary">Submit</button>
+                    <button type="submit" name="<?php echo $row['student_id'] ? 'update' : 'create'; ?>" class="btn btn-primary">Submit</button>
                 </form>
             </div>
 
