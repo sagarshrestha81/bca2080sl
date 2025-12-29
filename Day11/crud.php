@@ -123,7 +123,26 @@ $table = "students";
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
         <script src="./jquery.js"></script>
         <script>
-            jQuery();
+            $(document).ready(function(){
+             
+                $.ajax({
+                    method:"get",
+                    url:"./test.php",
+                    data:{
+                        name:"John",
+                        age:30,
+                    },
+                    success:function(result){
+                     console.log("data loaded");
+                     console.log(result);
+                    }
+                })
+                
+
+
+            });
+
+            
         </script>
 </body>
 
